@@ -2,9 +2,9 @@
     <view class="cu-bar tabbar bg-white shadow foot">
         <view class="action" @click="NavChange(tabbar, index)" v-for="(tabbar, index) of tabbars" :key="index">
             <view class='cuIcon-cu-image'>
-                <text :class="index === active ? tabbar.iconActiveClass : tabbar.iconClass"></text>
+                <text :class="index === active ? [tabbar.activeIcon, tabbar.activeColor] : [tabbar.icon, tabbar.color]"></text>
             </view>
-            <view :class="index === active ? tabbar.titleActiveClass : tabbar.titleClass">{{ tabbar.title }}</view>
+            <view :class="index === active ? tabbar.activeColor : tabbar.color">{{ tabbar.title }}</view>
         </view>
     </view>
 </template>
@@ -13,10 +13,10 @@
 import { Vue, Component, Prop } from 'vue-property-decorator';
 
 export interface Tabbar {
-    iconClass: string;
-    iconActiveClass: string;
-    titleClass: string;
-    titleActiveClass: string;
+    icon: string;
+    activeIcon: string;
+    color: string;
+    activeColor: string;
     title: string;
     path: string;
 }
@@ -29,7 +29,7 @@ export default class Footer extends Vue {
 
     @Prop({
         default: () => []
-    }) readonly tabbars!: Tabbar[]
+    }) readonly tabbars!: Tabbar[];
 
     NavChange(tabbar: Tabbar, index: number) {
         this.$emit('on-change', tabbar, index)

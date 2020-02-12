@@ -13,5 +13,6 @@
 		"navigationStyle": "custom",
 		"navigationBarTitleText": "uni-app",
 		"navigationBarTextStyle": "white"
-	}
+	},
+	"usingComponts": true
 }

@@ -39,9 +39,34 @@
     });
 </script>
 
-<style>
+<style lang="scss">
 /*每个页面公共css */
 @import "./plugins/colorui/main.css";
 @import "./plugins/colorui/icon.css";
-@import "./static/css/icon.css";
+/* @import "./static/css/icon.css"; */
+
+$tennis-court: #007747;
+$tennis-white: #e7e1ed;
+$tennis-default: #583688;
+$tennis-ball: #bbc700;
+$tennis-ball-text: #21281b;
+
+$themes: (
+	'tennis-court': $tennis-court,
+	'tennis-white': $tennis-white,
+	'tennis-default': $tennis-default,
+	'tennis-ball': $tennis-ball,
+	'tennis-ball-text': $tennis-ball-text,
+);
+
+@each $color,$value in $themes {
+    .text-#{$color} {
+        color: $value;
+    }
+
+    .bg-#{$color} {
+        background-color: $value;
+        color: #fff;
+    }
+}
 </style>
