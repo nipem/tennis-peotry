@@ -40,8 +40,8 @@ export default class Index extends Vue {
       activeIcon: "cuIcon-peoplefill",
       color: "text-gray",
       activeColor: "text-green",
-      title: "发现",
-      path: "/"
+      title: "快讯",
+      path: "/pages/news/index"
     },
     {
       icon: "cuIcon-people",

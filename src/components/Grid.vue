@@ -7,7 +7,7 @@
       </view>
     </view>
     <view class="cu-list grid" :class="['col-' + gridCol, gridBorder?'':'no-border']">
-      <view class="cu-item" v-for="(grid, index) of grids" :key="index">
+      <view class="cu-item" v-for="(grid, index) of grids" :key="index" @click="onclick(grid, index)">
         <view :class="[grid.icon, grid.color]">
           <view class="cu-tag badge" v-if="grid.badge !== 0">
             <block v-if="grid.badge !== 1">{{grid.badge>99?"99+":grid.badge}}</block>
@@ -22,7 +22,9 @@
 <script lang="ts">
 import { Vue, Component, Prop } from "vue-property-decorator";
 
-export interface Grids {
+export interface Grid {
+  [key: string]: any;
+  url?: string;
   icon: string;
   color: string;
   badge: number;
@@ -30,7 +32,7 @@ export interface Grids {
 }
 
 @Component
-export default class Grid extends Vue {
+export default class GridComponent extends Vue {
   @Prop({
     default: ""
   })
@@ -54,6 +56,10 @@ export default class Grid extends Vue {
   @Prop({
     default: () => []
   })
-  readonly grids!: Grids[];
+  readonly grids!: Grid[];
+
+  onclick(grid: Grid, index: number) {
+    this.$emit('click', grid, index);
+  }
 }
 </script>

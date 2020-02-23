@@ -5,20 +5,20 @@
       <view
         class="cu-item flex-sub"
         :class="index==active?activeClass + ' cur':''"
-        v-for="(navTab,index) in data"
+        v-for="(item,index) in list"
         :key="index"
-        @click="tabSelect(navTab, index)">
-          <text class="padding-lr-xs" :class="navTab.icon" v-if="navTab.icon"></text> {{navTab.title}}
+        @click="tabSelect(item, index)">
+          <text class="padding-lr-xs" :class="item.icon" v-if="item.icon"></text> {{item.title}}
       </view>
     </view>
     <view
       v-else
       class="cu-item flex-sub"
       :class="index==active?activeClass + ' cur':''"
-      v-for="(navTab,index) in data"
+      v-for="(item,index) in list"
       :key="index"
-      @click="tabSelect(navTab, index)">
-        <text class="padding-lr-xs" :class="navTab.icon" v-if="navTab.icon"></text> {{navTab.title}}
+      @click="tabSelect(item, index)">
+        <text class="padding-lr-xs" :class="item.icon" v-if="item.icon"></text> {{item.title}}
     </view>
   </scroll-view>
 </view>
@@ -49,7 +49,7 @@ export default class NavTab extends Vue {
    */
   @Prop({
     default: () => []
-  }) readonly data!: Navtab[];
+  }) readonly list!: Navtab[];
 
   /**
    * 设置容器背景颜色

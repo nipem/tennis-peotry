@@ -1,7 +1,7 @@
 <template>
     <view class="cu-card case" :class="isCard?'no-card':''">
         <view class="cu-item shadow">
-            <view class="image" v-if="image">
+            <view class="image" v-if="image" @click="clickImage">
                 <image :src="image" mode="widthFix"></image>
                 <view class="cu-tag bg-blue" v-if="tag.length">{{tag}}</view>
                 <view class="cu-bar bg-shadeBottom" v-if="desc.length">
@@ -9,8 +9,10 @@
                 </view>
             </view>
             <view class="cu-list menu-avatar" v-if="avatar && username && userinfo">
-                <view class="cu-item">
-                    <view class="cu-avatar round lg" :style="'background-image:url(' + avatar + ');'"></view>
+                <view class="cu-item" @click="clickAvatar">
+                    <view
+                        class="cu-avatar round lg"
+                        :style="'background-image:url(' + avatar + ');'"></view>
                     <view class="content flex-sub">
                         <view class="text-grey">{{username}}</view>
                         <view class="text-gray text-sm flex justify-between">
@@ -34,7 +36,8 @@
     import {
         Vue,
         Component,
-        Prop
+        Prop,
+        Emit
     } from 'vue-property-decorator';
 
     @Component
@@ -66,6 +69,14 @@
         @Prop({
             default: ''
         }) readonly userinfo!: string;
+
+        clickImage() {
+            this.$emit('click-image')
+        }
+
+        clickAvatar() {
+            this.$emit('click-avatar')
+        }
     }
 </script>
 

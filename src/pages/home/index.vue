@@ -12,7 +12,7 @@
 			container="bg-tennis-default"
 			activeClass="text-tennis-court"
 			:active="activeNavtab"
-			:data="navtabs"
+			:list="navtabs"
 			:center="true"
 			@on-change="tabSelect">
 		</tp-navtab>
@@ -26,6 +26,8 @@
 				<text>{{userInfo.nickName}}</text>
 			</view>
 			<button v-if="!isAuthorized" open-type="getUserInfo" @getuserinfo="getUserInfo">登录</button>
+			<button @click="upload">上传图片</button>
+			<image :src="uploadFile"></image>
 		</view>
 	</view>
 </template>
@@ -220,6 +222,31 @@ export default class Index extends Vue {
 				duration: 2000
 			})
 		}
+	}
+
+	uploadFile = '';
+	upload() {
+		wx.chooseImage({
+			success: (res: any) => {
+				const tempFilePaths = res.tempFilePaths
+				const filename = tempFilePaths[0].slice('http://tmp/'.length)
+				console.log(res, tempFilePaths, tempFilePaths[0].match(/\.[^.]+?$/)[0]);
+				wx.cloud.init({
+					env: wx.cloud.DYNAMIC_CURRENT_ENV
+				});
+				wx.cloud.uploadFile({
+					cloudPath: 'tennis/' + new Date().getTime() + tempFilePaths[0].match(/\.[^.]+?$/)[0], // 上传至云端的路径
+					filePath: tempFilePaths[0], // 小程序临时文件路径
+					success: (res: any) => {
+						// 返回文件 ID
+						console.log(res, res.fileID)
+						this.uploadFile = res.fileID;
+					},
+					fail: console.error
+				})
+
+			}
+		})
 	}
 }
 </script>
