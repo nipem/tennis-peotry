@@ -52,7 +52,7 @@ export default class extends Vue {
   @store.State userInfo!: any;
 
   isCard = true;
-  userinfo = "简介：Play tennis as poetry";
+  userinfo = "Level 3";
 
   gridCol = 4;
   menuBorder = true;

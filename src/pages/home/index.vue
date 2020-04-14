@@ -17,7 +17,7 @@
 			@on-change="tabSelect">
 		</tp-navtab>
 		<view class="text-center">
-			<image class="logo" :src="userInfo.avatarUrl ? userInfo.avatarUrl : '../../static/logo.png'"></image>
+			<image class="w-10 h-10" :src="userInfo.avatarUrl ? userInfo.avatarUrl : '../../static/logo.png'"></image>
 			<view>
 				<text class="title">{{title}}</text>
 			</view>

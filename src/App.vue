@@ -41,6 +41,7 @@
 /*每个页面公共css */
 @import "./plugins/colorui/main.css";
 @import "./plugins/colorui/icon.css";
+@import "./static/css/tailwind.scss";
 /* @import "./static/css/icon.css"; */
 
 $tennis-court: #007747;

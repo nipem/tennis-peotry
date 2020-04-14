@@ -10,7 +10,7 @@
           名称
           <tp-required></tp-required>
         </view>
-        <input placeholder="场地名称" />
+        <input placeholder="场地名称" v-model.trim="name"/>
       </view>
 
       <view class="cu-bar bg-white margin-top">
@@ -69,13 +69,12 @@
 
       <view class="cu-form-group margin-top">
         <view class="title">地址</view>
-        <input placeholder="如：深圳市南山区前海湾1号" />
+        <input placeholder="如：深圳市南山区前海湾1号" v-model.trim="address"/>
       </view>
 
       <view class="cu-bar bg-white margin-top">
         <view class="action">
           营业电话
-          <tp-required></tp-required>
         </view>
       </view>
       <view
@@ -91,12 +90,11 @@
       <view class="cu-bar bg-white margin-top">
         <view class="action">
           营业时间
-          <tp-required></tp-required>
         </view>
       </view>
       <view
         class="cu-form-group business"
-        v-for="(item, index) of times"
+        v-for="(item, index) of businessHour"
         v-show="index === 0 || index <= timeCounts"
         :key="index"
       >
@@ -106,7 +104,11 @@
           :value="timeValue"
           :range="timeList"
         >
-          <view class="picker">{{times[index]}}</view>
+          <view
+            class="picker"
+            :style="{color: businessHour[index] === TIMEPLACEHOLDER ? '#777' : '#555'}">
+            {{businessHour[index]}}
+          </view>
         </picker>
         <text
           :class="index === 0 ? 'cuIcon-roundadd' : 'cuIcon-move'"
@@ -117,7 +119,10 @@
 
       <view class="cu-form-group align-start margin-top">
         <view class="title">补充说明</view>
-        <textarea maxlength="-1" placeholder="补充详细的描述，加速审核"></textarea>
+        <textarea
+          maxlength="-1"
+          placeholder="补充详细的描述，加速审核"
+          v-model.trim="description"></textarea>
       </view>
 
       <button
@@ -143,43 +148,53 @@ function generateDaytimes() {
 }
 
 const DAYTIMES = generateDaytimes();
-const DEFAULTIME = "每日 09:00-21:00";
+const TIMEPLACEHOLDER = "请选择时间";
+
+interface Location {
+  name: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+}
 
 @Component
 export default class Report extends Vue {
-  imgList = [];
-  location: any = null;
+  // 场地名称
+  name = '';
+
+  // 位置
+  location: Location | null = null;
   latitude: number | null = null;
   longitude: number | null = null;
   markers: any[] = [];
-  maxImages = 8; // 最多上传 8 张图片
-  isValid = false;
 
+  // 现场拍照
+  imgList = [];
+  maxImages = 8; // 最多上传 8 张图片
+
+  address = '';
+
+  // 营业电话
   phones = [""];
   phoneCounts = 1;
 
-  times = [DEFAULTIME];
+  // 营业时间
+  TIMEPLACEHOLDER = TIMEPLACEHOLDER;
+  businessHour = [TIMEPLACEHOLDER];
   timeCounts = 1;
   timeList = [["每日", "工作日", "周末"], DAYTIMES, DAYTIMES];
   timeValue = [0, 18, 42];
 
-  setTimes(e: any, index: number) {
-    const values = e.detail.value;
-    const v = values.map(
-      (value: any, index: number) => this.timeList[index][value]
-    );
-    this.times.splice(index, 1, `${v[0]} ${v[1]}-${v[2]}`);
-  }
+  description = '';
+  isValid = false;
 
   chooseLocation() {
     uni.chooseLocation({
       success: (res: any) => {
         const { name, address, latitude, longitude } = res;
-        console.log("位置名称：" + name);
-        console.log("详细地址：" + address);
-        console.log("纬度：" + latitude);
-        console.log("经度：" + longitude);
-        this.location = res;
+        this.location = {
+          name, address, latitude, longitude
+        };
         this.latitude = latitude;
         this.longitude = longitude;
         this.markers = [
@@ -195,7 +210,6 @@ export default class Report extends Vue {
 
   chooseImage() {
     wx.chooseImage({
-      // count: 4, //默认9
       sizeType: ["original", "compressed"], //可以指定是原图还是压缩图，默认二者都有
       sourceType: ["album"], //从相册选择
       success: (res: any) => {
@@ -237,20 +251,81 @@ export default class Report extends Vue {
       this.phones.splice(index, 1);
     }
   }
+
   timeHandle(index: number) {
     if (index === 0) {
       if (this.timeCounts <= 2) {
         this.timeCounts += 1;
-        this.times.push(DEFAULTIME);
+        this.businessHour.push(TIMEPLACEHOLDER);
       }
     } else {
       this.timeCounts -= 1;
-      this.times.splice(index, 1);
+      this.businessHour.splice(index, 1);
     }
   }
 
+  setTimes(e: any, index: number) {
+    const values = e.detail.value;
+    const v = values.map(
+      (value: any, index: number) => this.timeList[index][value]
+    );
+    this.businessHour.splice(index, 1, `${v[0]} ${v[1]}-${v[2]}`);
+  }
+
+  toast(title: string) {
+    uni.showToast({
+      icon: 'none',
+      title,
+      duration: 1000
+    });
+  }
+
   report() {
-    console.log("validation first !");
+    const { toast } = this;
+    let title = '';
+    // if (!this.name) {
+    //   return toast('请填写场地名称');
+    // }
+    // if (!this.location) {
+    //   return toast('请定位场地位置');
+    // }
+    // if (!this.imgList.length) {
+    //   return toast('请拍摄现场图片');
+    // }
+    let timestamp = new Date().getTime();
+    const cloudPath = () => 'tennis/court/' + (++timestamp).toString();
+    this.uploadImage(this.imgList, cloudPath).then(res => {
+      const files = (res as any[]).map(item => item.fileID);
+      console.log(files);
+      console.log(
+        this.name,
+        this.location,
+        this.address,
+        this.phones,
+        this.businessHour,
+        this.imgList,
+        this.description,
+        files
+      );
+      console.log("validation first !");
+    });
+  }
+  uploadImage(list: string[], cloudPath: () => string) {
+    const { cloud } = wx;
+
+    cloud.init({
+      env: cloud.DYNAMIC_CURRENT_ENV
+    });
+
+    cloud.callFunction({name: 'user'}).then(console.log).catch(console.error)
+    return;
+
+    const uploadPromises = list.map(img => cloud.uploadFile({
+      cloudPath: cloudPath(), // 上传至云端的路径
+      filePath: img,
+    }));
+
+    return Promise.all(uploadPromises).catch(console.error);
   }
 }
 </script>
